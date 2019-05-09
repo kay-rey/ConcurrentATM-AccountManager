@@ -1,102 +1,110 @@
-
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Random;
 
 public class ATM {
 
     private static int MAX_INSERT_THREADS = 200;
-    private static int MAX_COMPARE_THREADS = 5;
-    private static int KEY_LENGTH = 5;
-    private static int VALUE_LENGTH = 20;
+    private static int BOUND = 1000;
 
-    private String[] keys = new String[MAX_INSERT_THREADS];
-    private String[] values = new String[MAX_INSERT_THREADS];
-    private AccountManager<String, String> table = AccountManager.create();
-    private AtomicInteger mismatch_count = new AtomicInteger(0);
-
+    private AccountManager<String, String> account = AccountManager.create();
 
     /**
-     * Searches for a given key.
+     * Gives balance of the account
      */
-    class SearchThread extends Thread {
-        String key;
-        String expectedValue;
+    class BalanceThread extends Thread {
 
-        public SearchThread(String key, String expectedValue) {
-            this.key = key;
-            this.expectedValue = expectedValue;
+        public BalanceThread() {
         }
 
         @Override
         public void run() {
-            System.out.println("Searching for " + key);
-            String databaseValue = table.search(key);
-            if (!databaseValue.equals(expectedValue)) {
-                System.out.println(String.format(
-                        "Mismatch found. Key: %s Expected: %s Found: %s",
-                        key,
-                        expectedValue,
-                        databaseValue
-                ));
-                mismatch_count.addAndGet(1);
-            }
+            account.balance();
         }
     }
 
     /**
-     * Inserts strings into the table.
+     * Inserts strings into the account.
      */
-    class InsertThread extends Thread {
-        String key;
-        String value;
+    class DepositThread extends Thread {
+        int depositAmount;
 
-        public InsertThread(String key, String value) {
-            this.key = key;
-            this.value = value;
+        public DepositThread(int depositAmount) {
+            this.depositAmount = depositAmount;
         }
 
         @Override
         public void run() {
-            System.out.println(String.format("Inserting key: %s value: %s",
-                    key, value));
-            table.deposit(key, value);
+            System.out.println(String.format("Depositing: $%s",
+                    depositAmount));
+            account.deposit(depositAmount);
+        }
+    }
+
+    class WithdrawThread extends Thread {
+        int withdrawAmount;
+
+        public WithdrawThread(int withdrawAmount) {
+            this.withdrawAmount = withdrawAmount;
+        }
+
+        @Override
+        public void run() {
+            System.out.println(String.format("Withdrawing: $%s",
+                    withdrawAmount));
+            account.withdraw(withdrawAmount);
         }
     }
 
     void runATM() throws InterruptedException {
-        Thread insertThreads[] = new Thread[MAX_INSERT_THREADS];
-        Thread searchThreads[] = new Thread[MAX_INSERT_THREADS];
+        Thread depositThreads[] = new Thread[MAX_INSERT_THREADS];
+        Thread balanceThreads[] = new Thread[MAX_INSERT_THREADS];
+        Thread withdrawThreads[] = new Thread[MAX_INSERT_THREADS];
 
         // Insert random strings
         for (int i = 0; i < MAX_INSERT_THREADS; i++) {
-            keys[i] = new RandomString(KEY_LENGTH).nextString();
-            values[i] = new RandomString(VALUE_LENGTH).nextString();
-            insertThreads[i] = new InsertThread(keys[i], values[i]);
-            insertThreads[i].run();
+            depositThreads[i] = new DepositThread(getRandomNumberInRange(0, BOUND));
+            depositThreads[i].join();
+            depositThreads[i].run();
         }
 
         // Join on the inserts
+//        for (int i = 0; i < MAX_INSERT_THREADS; i++) {
+//            depositThreads[i].join();
+//        }
+
         for (int i = 0; i < MAX_INSERT_THREADS; i++) {
-            insertThreads[i].join();
+            withdrawThreads[i] = new WithdrawThread(getRandomNumberInRange(0, BOUND));
+            withdrawThreads[i].join();
+            withdrawThreads[i].run();
         }
+
+        // Join on the inserts
+//        for (int i = 0; i < MAX_INSERT_THREADS; i++) {
+//            withdrawThreads[i].join();
+//        }
 
         // Run the comparisons
-        for (int i = 0; i < MAX_INSERT_THREADS; ) {
-            for (int j = 0; j < MAX_COMPARE_THREADS && i < MAX_INSERT_THREADS; i++, j++) {
-                String key = keys[i];
-                String expectedValue = values[i];
-                searchThreads[i] = new SearchThread(key, expectedValue);
-                searchThreads[i].run();
-            }
+        for (int i = 0; i < MAX_INSERT_THREADS; i++) {
+            balanceThreads[i] = new BalanceThread();
+            balanceThreads[i].join();
+            balanceThreads[i].run();
         }
-        for (int i = 0; i < MAX_COMPARE_THREADS; i++) {
-            searchThreads[i].join();
-        }
-
-        System.out.println(String.format("Process ended. %d mismatches found", mismatch_count.get()));
+//        for (int i = 0; i < MAX_COMPARE_THREADS; i++) {
+//            balanceThreads[i].join();
+//        }
     }
 
     public static void main(String[] args) throws Exception {
         ATM mainATM = new ATM();
         mainATM.runATM();
     }
+
+    private static int getRandomNumberInRange(int min, int max) {
+
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
+    }
+
 }
