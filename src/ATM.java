@@ -17,7 +17,9 @@ public class ATM {
 
         @Override
         public void run() {
-            account.balance();
+            int accountBalance = account.balance();
+            System.out.println(String.format("Balance: $%s",
+                    accountBalance));
         }
     }
 
@@ -82,7 +84,7 @@ public class ATM {
 //            withdrawThreads[i].join();
 //        }
 
-        // Run the comparisons
+        // Run the balance threads
         for (int i = 0; i < MAX_INSERT_THREADS; i++) {
             balanceThreads[i] = new BalanceThread();
             balanceThreads[i].join();

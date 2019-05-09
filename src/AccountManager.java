@@ -27,10 +27,10 @@ import java.util.concurrent.Semaphore;
 public class AccountManager {
 
     // Class member variables.
-    Semaphore mutex = new Semaphore(1); //used for reader and write
-    Semaphore write = new Semaphore(1); //used just for writer
-    int read_count = 0;
-    int account_balance = 0;
+    private Semaphore mutex = new Semaphore(1); //used for reader and write
+    private Semaphore write = new Semaphore(1); //used just for writer
+    private int read_count = 0;
+    private int account_balance = 0;
 
     /**
      * Creates a new AccountManager.
@@ -42,24 +42,20 @@ public class AccountManager {
     /**
      * Inserts a new value in the hash table.
      */
-    public void deposit(int depAmount) {
+    public void deposit(int depAmount) {    //deposit is a writer
         try {
             write.acquire();
 //            System.out.println("Write semaphore acquired for insert operator");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-//        javaMap.put(key, value);
-
         account_balance += depAmount;
-
         System.out.println("The account balance is: $" + account_balance);
 
         write.release();
     }
 
-    public void withdraw(int withdrawAmount) {
+    public void withdraw(int withdrawAmount) {  //withdraw is a writer
         try {
             write.acquire();
 //            System.out.println("Write semaphore acquired for insert operator");
@@ -81,7 +77,7 @@ public class AccountManager {
     }
 
 
-    public int balance() {
+    public int balance() {  //balance is a reader. return the balance of the account
         try {
             mutex.acquire();
         } catch (InterruptedException e) {
@@ -110,7 +106,6 @@ public class AccountManager {
         }
         mutex.release();
 
-        //            System.out.println("The value that is returned is: " + javaMap.get(k));
         return currentBalance;
 
     }
