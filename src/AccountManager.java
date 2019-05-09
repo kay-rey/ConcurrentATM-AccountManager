@@ -22,21 +22,15 @@ AccountManager has the three public operations deposit, withdraw and balance. It
 ATM creates ONE SINGLE instance of AccountManager. It then creates many threads for deposit, withdraw and balance using Java Futures. Have many deposits, many withdraws and many balances run in many threads (~200 each if the machine can handle.) Each of those threads must print the result of the call to AccountManger. This is the class that has the main function.
  */
 
-import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
-public class AccountManager<K, V> {
+public class AccountManager {
 
     // Class member variables.
     Semaphore mutex = new Semaphore(1); //used for reader and write
     Semaphore write = new Semaphore(1); //used just for writer
     int read_count = 0;
     int account_balance = 0;
-
-    // TODO: Implement. Use a java.util.HashMap as the underlying hash table.
-    HashMap<K, V> javaMap;
-
-    // Public methods
 
     /**
      * Creates a new AccountManager.
@@ -49,7 +43,6 @@ public class AccountManager<K, V> {
      * Inserts a new value in the hash table.
      */
     public void deposit(int depAmount) {
-        // TODO: Implement. Writer
         try {
             write.acquire();
 //            System.out.println("Write semaphore acquired for insert operator");
@@ -67,7 +60,6 @@ public class AccountManager<K, V> {
     }
 
     public void withdraw(int withdrawAmount) {
-        // TODO: Implement. Writer
         try {
             write.acquire();
 //            System.out.println("Write semaphore acquired for insert operator");
@@ -75,9 +67,8 @@ public class AccountManager<K, V> {
             e.printStackTrace();
         }
 
-//        javaMap.put(key, value);
         int minBalance = account_balance - withdrawAmount;
-        if (minBalance > 0) {
+        if (minBalance > 0) {   //checks if the balance is greater than 0 if balance is not greater than zero then the balance does not change
             account_balance = minBalance;
             System.out.println("The account balance is: $" + account_balance);
         } else if (minBalance == 0) {
@@ -91,7 +82,6 @@ public class AccountManager<K, V> {
 
 
     public int balance() {
-        // TODO: Implement. Reader
         try {
             mutex.acquire();
         } catch (InterruptedException e) {
@@ -125,35 +115,12 @@ public class AccountManager<K, V> {
 
     }
 
-    /**
-     * Deletes the value/key par for k, or does nothing if the key does not exist.
-     *
-     * @param k
-     */
-    public void delete(K k) {
-        // TODO: Implement. Writer
-        if (javaMap.containsKey(k)) {
-            try {
-                write.acquire();
-//            System.out.println("Write semaphore acquired for insert operator");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            javaMap.remove(k);
-            write.release();
-        }
-    }
-
     // Private methods
 
     /**
      * Private constructor.
      */
     private AccountManager() {
-        // TODO: Implement
-        javaMap = new HashMap<K, V>();
-
     }
-
 
 }

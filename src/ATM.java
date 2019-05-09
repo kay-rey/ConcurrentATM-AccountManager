@@ -5,7 +5,7 @@ public class ATM {
     private static int MAX_INSERT_THREADS = 200;
     private static int BOUND = 1000;
 
-    private AccountManager<String, String> account = AccountManager.create();
+    private AccountManager account = AccountManager.create();
 
     /**
      * Gives balance of the account
