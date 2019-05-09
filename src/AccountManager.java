@@ -2,6 +2,24 @@
 Kevin Baltazar Reyes
 CSC 415
 SFSU Spring 2019
+
+Implement a bank account ledger. The account receives the following operations:
+- DEPOSIT
+- WITHDRAW
+- BALANCE
+
+The first two operations take a single integer and applies it to the balance. The last operation takes no arguments. All operations return the current balance when successful.
+
+DEPOSIT is always successful (you can always add money to your account). It does not throw exceptions.
+
+WITHDRAW is only successful when the balance allows it (no overdrafts). It throws an Exception if there are not enough funds.
+
+BALANCE is always successful no matter what
+
+Very important: there are no overdrafts.
+You will write two classes: AccountManager and ATM.
+AccountManager has the three public operations deposit, withdraw and balance. It is fully concurrent using the Readers-Writers algorithm. It stores the balance in memory. It does not have a main function.
+ATM creates ONE SINGLE instance of AccountManager. It then creates many threads for deposit, withdraw and balance using Java Futures. Have many deposits, many withdraws and many balances run in many threads (~200 each if the machine can handle.) Each of those threads must print the result of the call to AccountManger. This is the class that has the main function.
  */
 
 import java.util.HashMap;
@@ -30,7 +48,7 @@ public class AccountManager<K, V> {
     /**
      * Inserts a new value in the hash table.
      */
-    public void deposit(K key, V value, int depAmount) {
+    public void deposit(int depAmount) {
         // TODO: Implement. Writer
         try {
             write.acquire();
@@ -45,6 +63,29 @@ public class AccountManager<K, V> {
 
         System.out.println("The account balance is: $" + account_balance);
 
+        write.release();
+    }
+
+    public void withdraw(int withdrawAmount) {
+        // TODO: Implement. Writer
+        try {
+            write.acquire();
+//            System.out.println("Write semaphore acquired for insert operator");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+//        javaMap.put(key, value);
+        int minBalance = account_balance - withdrawAmount;
+        if (minBalance > 0) {
+            account_balance = minBalance;
+            System.out.println("The account balance is: $" + account_balance);
+        } else if (minBalance == 0) {
+            account_balance = 0;
+            System.out.println("WATCH OUT you do not have any more money in the account");
+        } else {
+            System.out.println("You have overdrafted your account. The withdrawal was rejected");
+        }
         write.release();
     }
 

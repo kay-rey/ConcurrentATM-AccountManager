@@ -10,7 +10,7 @@ public class ATM {
 
     private String[] keys = new String[MAX_INSERT_THREADS];
     private String[] values = new String[MAX_INSERT_THREADS];
-    private AccountManager<String, String> table = AccountManager.create(2);
+    private AccountManager<String, String> table = AccountManager.create();
     private AtomicInteger mismatch_count = new AtomicInteger(0);
 
 
