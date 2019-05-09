@@ -89,6 +89,41 @@ public class AccountManager<K, V> {
         write.release();
     }
 
+
+    public int balance() {
+        // TODO: Implement. Reader
+        try {
+            mutex.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        read_count++;
+        if (read_count == 1) {
+            try {
+                write.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        mutex.release();
+
+        int currentBalance = account_balance;
+
+        try {
+            mutex.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        read_count--;
+        if (read_count == 0) {  //makes sure that read count gets back to zero before releasing the write semaphore
+            write.release();
+        }
+        mutex.release();
+
+        //            System.out.println("The value that is returned is: " + javaMap.get(k));
+        return currentBalance;
+
+    }
     /**
      * Looks for a value with key k. Return null if the value does not exist.
      */
