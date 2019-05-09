@@ -13,6 +13,7 @@ public class AccountManager<K, V> {
     Semaphore mutex = new Semaphore(1); //used for reader and write
     Semaphore write = new Semaphore(1); //used just for writer
     int read_count = 0;
+    int account_balance = 0;
 
     // TODO: Implement. Use a java.util.HashMap as the underlying hash table.
     HashMap<K, V> javaMap;
@@ -21,11 +22,9 @@ public class AccountManager<K, V> {
 
     /**
      * Creates a new AccountManager.
-     *
-     * @param initialSize the initial size of the table.
      */
-    public static AccountManager create(int initialSize) {
-        return new AccountManager(initialSize);
+    public static AccountManager create() {
+        return new AccountManager();
     }
 
     /**
@@ -40,7 +39,12 @@ public class AccountManager<K, V> {
             e.printStackTrace();
         }
 
-        javaMap.put(key, value);
+//        javaMap.put(key, value);
+
+        account_balance += depAmount;
+
+        System.out.println("The account balance is: $" + account_balance);
+
         write.release();
     }
 
@@ -110,9 +114,9 @@ public class AccountManager<K, V> {
     /**
      * Private constructor.
      */
-    private AccountManager(int initialSize) {
+    private AccountManager() {
         // TODO: Implement
-        javaMap = new HashMap<K, V>(initialSize);
+        javaMap = new HashMap<K, V>();
 
     }
 
