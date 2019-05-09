@@ -1,9 +1,9 @@
-#Concurrent ATM and Account Manager
-##Made by Kevin Baltazar Reyes
-###Profe Livia
-###CSC-415 SFSU Spring 2019
+# Concurrent ATM and Account Manager
+## Made by Kevin Baltazar Reyes
+### Profe Livia
+### CSC-415 SFSU Spring 2019
 
-####How to run:
+#### How to run:
 (Easy Way using IntelliJ):
 1. Import project in IntelliJ
 2. Right click the ATM class
