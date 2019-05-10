@@ -1,3 +1,9 @@
+/*
+Kevin Baltazar Reyes
+CSC 415
+SFSU Spring 2019
+ */
+
 import java.util.Random;
 
 public class ATM {

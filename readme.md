@@ -15,7 +15,9 @@
 ```
 javac ATM.java AccountManager.java
 ```
+
 3. Once the files are succesfully compiled, run the program by running the ATM file:
+
 ```
 java ATM
 ```
