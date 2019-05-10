@@ -1,7 +1,9 @@
 # Concurrent ATM and Account Manager
 ## Made by Kevin Baltazar Reyes
-### Profe Livia Pinera
+### Professor Livia Pinera
 ### CSC-415 SFSU Spring 2019
+
+Account Manager and ATM which simulate multiple clients accessing the balance of the account manager at once, concurrently.
 
 #### How to run:
 (Easy Way using IntelliJ):
