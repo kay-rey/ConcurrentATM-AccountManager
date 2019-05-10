@@ -23,8 +23,36 @@ public class ATM {
         }
     }
 
+    void runATM() throws InterruptedException {
+        Thread[] allThreads = new Thread[MAX_INSERT_THREADS];
+
+        /*
+        randomly create deposit, withdraw and balance threads using the random number generator
+        0 = deposit
+        1 = withdraw
+        2 = balance
+         */
+        for (int i = 0; i < MAX_INSERT_THREADS; ++i) {
+            int outcome = getRandomNumberInRange(0, 2);
+
+            if (outcome == 2) {
+                allThreads[i] = new DepositThread(getRandomNumberInRange(1, BOUND));
+            } else if (outcome == 1) {
+                allThreads[i] = new WithdrawThread(getRandomNumberInRange(1, BOUND));
+            } else {
+                allThreads[i] = new BalanceThread();
+            }
+            allThreads[i].run();
+        }
+
+        // Join on the all the threads
+        for (int i = 0; i < MAX_INSERT_THREADS; ++i) {
+            allThreads[i].join();
+        }
+    }
+
     /**
-     * Inserts strings into the account.
+     * Deposits money into the account.
      */
     class DepositThread extends Thread {
         int depositAmount;
@@ -41,6 +69,9 @@ public class ATM {
         }
     }
 
+    /**
+     * Withdraws money from the account.
+     */
     class WithdrawThread extends Thread {
         int withdrawAmount;
 
@@ -54,45 +85,6 @@ public class ATM {
                     withdrawAmount));
             account.withdraw(withdrawAmount);
         }
-    }
-
-    void runATM() throws InterruptedException {
-        Thread depositThreads[] = new Thread[MAX_INSERT_THREADS];
-        Thread balanceThreads[] = new Thread[MAX_INSERT_THREADS];
-        Thread withdrawThreads[] = new Thread[MAX_INSERT_THREADS];
-
-        // Insert random strings
-        for (int i = 0; i < MAX_INSERT_THREADS; i++) {
-            depositThreads[i] = new DepositThread(getRandomNumberInRange(0, BOUND));
-            depositThreads[i].join();
-            depositThreads[i].run();
-        }
-
-        // Join on the inserts
-//        for (int i = 0; i < MAX_INSERT_THREADS; i++) {
-//            depositThreads[i].join();
-//        }
-
-        for (int i = 0; i < MAX_INSERT_THREADS; i++) {
-            withdrawThreads[i] = new WithdrawThread(getRandomNumberInRange(0, BOUND));
-            withdrawThreads[i].join();
-            withdrawThreads[i].run();
-        }
-
-        // Join on the inserts
-//        for (int i = 0; i < MAX_INSERT_THREADS; i++) {
-//            withdrawThreads[i].join();
-//        }
-
-        // Run the balance threads
-        for (int i = 0; i < MAX_INSERT_THREADS; i++) {
-            balanceThreads[i] = new BalanceThread();
-            balanceThreads[i].join();
-            balanceThreads[i].run();
-        }
-//        for (int i = 0; i < MAX_COMPARE_THREADS; i++) {
-//            balanceThreads[i].join();
-//        }
     }
 
     public static void main(String[] args) throws Exception {

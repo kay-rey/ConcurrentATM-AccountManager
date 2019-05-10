@@ -40,7 +40,7 @@ public class AccountManager {
     }
 
     /**
-     * Inserts a new value in the hash table.
+     * Adds the deposit amount into the account and displays balance
      */
     public void deposit(int depAmount) {    //deposit is a writer
         try {
@@ -55,6 +55,9 @@ public class AccountManager {
         write.release();
     }
 
+    /**
+     * Subtracts the withdrawl amount from the account and displays balance
+     */
     public void withdraw(int withdrawAmount) {  //withdraw is a writer
         try {
             write.acquire();
@@ -64,6 +67,7 @@ public class AccountManager {
         }
 
         int minBalance = account_balance - withdrawAmount;
+
         if (minBalance > 0) {   //checks if the balance is greater than 0 if balance is not greater than zero then the balance does not change
             account_balance = minBalance;
             System.out.println("The account balance is: $" + account_balance);
@@ -71,7 +75,7 @@ public class AccountManager {
             account_balance = 0;
             System.out.println("WATCH OUT you do not have any more money in the account");
         } else {
-            System.out.println("You have overdrafted your account. The withdrawal was rejected");
+            System.out.println("You have overdrafted your account. The withdrawal was rejected remaining balance is still: $" + account_balance);
         }
         write.release();
     }
