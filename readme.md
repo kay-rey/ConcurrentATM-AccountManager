@@ -1,6 +1,6 @@
 # Concurrent ATM and Account Manager
 ## Made by Kevin Baltazar Reyes
-### Profe Livia
+### Profe Livia Pinera
 ### CSC-415 SFSU Spring 2019
 
 #### How to run:
